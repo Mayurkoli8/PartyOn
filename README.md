@@ -1,13 +1,16 @@
 # Sexy Audio Streamer
 
-**Stream your Windows system audio over LAN to any device via browser. No apps. No drivers. WASAPI loopback.**
+**Stream your system audio over LAN to any device via browser. Cross-platform support for Windows, macOS, and Linux.**
 
 ## Features
 
 * **Real-time PC audio streaming** to your phone, tablet, or another PC.
 * **Browser-based:** Works instantly inside any modern browser (WebAudio + WebSocket).
 * **Zero-installation on Client:** Just a web page!
-* **WASAPI Loopback:** Captures system audio output directly from the sound card, requiring **no microphone** (Stereo Mix is also supported).
+* **Cross-Platform Audio Capture:** 
+  - **Windows:** WASAPI Loopback captures system audio directly (Stereo Mix fallback supported)
+  - **macOS:** Uses BlackHole virtual audio driver for system audio capture
+  - **Linux:** Supports standard audio input devices
 * **Multi-Client Streaming:** Stream to multiple devices simultaneously.
 * **Beautiful UI:** Clean, responsive player interface.
 * **Robust Connection:** Features auto-reconnect and queue buffering.
@@ -19,23 +22,42 @@
 ### Prerequisites
 
 * Python 3.x
-* Windows OS (Required for WASAPI functionality).
+* Operating System: Windows, macOS, or Linux
 
 ### Setup Steps
 
 1.  **Clone the Repository:**
     ```bash
     git clone https://github.com/Mayurkoli8/PartyOn.git
-    cd partyon
+    cd PartyOn
     ```
 2.  **Install Dependencies:**
     ```bash
     pip install -r requirements.txt
+    # or on macOS/Linux:
+    pip3 install -r requirements.txt
     ```
-3.  **Enable WASAPI Loopback (Recommended):**
+
+3.  **Platform-Specific Audio Setup:**
+
+    **Windows:**
     * Open your **Windows Sound Panel** (Recording tab).
     * Ensure **"Show Disabled Devices"** is checked.
     * Enable **"Stereo Mix,"** or verify that the main playback device's loopback functionality is accessible by the application.
+
+    **macOS:**
+    * Install **BlackHole** virtual audio driver:
+      1. Download from: https://github.com/ExistentialAudio/BlackHole/releases
+      2. Install BlackHole (2ch or 16ch version)
+      3. Open **System Preferences** (or **System Settings** on newer macOS) > **Sound**
+      4. Set **Output** to BlackHole
+      5. Set **Input** to BlackHole (for the application to capture)
+      6. Use **Audio MIDI Setup** to create a Multi-Output Device if you want to hear audio while streaming
+    * Restart the application after installing BlackHole
+
+    **Linux:**
+    * Ensure you have audio input devices configured
+    * The application will attempt to use available input devices
 
 ---
 
@@ -48,11 +70,18 @@ Use the standard command or the auto-restart script:
 1.  **Standard Python Command:**
     ```bash
     python server.py
+    # or on macOS/Linux:
+    python3 server.py
     ```
-2.  **Windows Auto-Restart Script (Recommended):**
-    ```bash
-    sexy-audio.bat
-    ```
+2.  **Auto-Restart Scripts:**
+    * **Windows:**
+      ```bash
+      sexy-audio.bat
+      ```
+    * **macOS/Linux:**
+      ```bash
+      ./sexy-audio.sh
+      ```
 
 ### Connecting from a Client Device
 
@@ -76,9 +105,10 @@ Use the standard command or the auto-restart script:
 
 ## File Structure
 ```bash
-    client.html     # Player UI
-    server.py       # Audio capture + stream server
-    sexy-audio.bat  # Auto restart batch
+    client.html        # Player UI
+    server.py          # Audio capture + stream server (cross-platform)
+    sexy-audio.bat     # Auto restart script (Windows)
+    sexy-audio.sh      # Auto restart script (macOS/Linux)
     requirements.txt
     README.md
     LICENSE
@@ -86,10 +116,22 @@ Use the standard command or the auto-restart script:
 
 ---
 
-## Windows Setup Tips
+## Platform-Specific Setup Tips
 
+### Windows
 * **No Sound:** Confirm that a loopback device (like Stereo Mix) is **Enabled** in the Windows Sound Recording panel.
 * **Connection Errors:** Check your **Windows Firewall** settings to ensure port **5000** is open for `server.py`.
+
+### macOS
+* **No Sound:** 
+  * Ensure BlackHole is installed and selected as both Output and Input in System Preferences/Settings
+  * If you want to hear audio while streaming, create a Multi-Output Device in Audio MIDI Setup that includes both your speakers and BlackHole
+* **Connection Errors:** Check your **macOS Firewall** settings to ensure port **5000** is open for `server.py`.
+* **Permission Issues:** macOS may require microphone permissions - grant them in System Preferences > Security & Privacy > Privacy > Microphone
+
+### Linux
+* **No Sound:** Ensure audio input devices are properly configured and accessible
+* **Connection Errors:** Check your firewall settings (ufw, firewalld, etc.) to ensure port **5000** is open
 
 ## License
 
