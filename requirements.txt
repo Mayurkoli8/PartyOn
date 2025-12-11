@@ -2,3 +2,7 @@ sounddevice
 Flask
 websockets
 numpy
+
+# Testing dependencies
+pytest
+hypothesis

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sexy Audio Stream</title>
 
@@ -66,19 +67,22 @@
 
     .sub{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:18px}
 
-    #playBtn {
-        width: 100%;
+    .btn {
         padding: 16px 20px;
         font-size: 18px;
         border: none;
         border-radius: 999px;
         cursor: pointer;
         font-weight: 700;
-        background: linear-gradient(90deg,var(--accent1), var(--accent2));
-        color: #021009;
         transition: transform .18s ease, box-shadow .18s ease;
         position: relative;
         overflow: hidden;
+    }
+
+    #playBtn {
+        width: 100%;
+        background: linear-gradient(90deg,var(--accent1), var(--accent2));
+        color: #021009;
         box-shadow: 0 8px 28px rgba(2,200,118,0.12), 0 2px 6px rgba(0,0,0,0.35);
         display:flex;align-items:center;justify-content:center;gap:12px;
     }
@@ -90,9 +94,96 @@
         width:22px;height:22px;display:inline-block;
     }
 
+    /* Control buttons row */
+    .controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        justify-content: center;
+    }
+
+    .controls .btn {
+        padding: 10px 18px;
+        font-size: 14px;
+        background: var(--glass);
+        color: var(--text);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .controls .btn:hover {
+        background: rgba(255,255,255,0.1);
+    }
+
+    /* Volume control */
+    .volume-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 14px;
+        padding: 0 20px;
+    }
+
+    .volume-control label {
+        font-size: 13px;
+        color: rgba(255,255,255,0.7);
+    }
+
+    .volume-control input[type="range"] {
+        flex: 1;
+        height: 6px;
+appearance: none;
+background: rgba(255,255,255,0.1);
+        border-radius: 3px;
+        outline: none;
+    }
+
+    .volume-control input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        background: var(--accent1);
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
     p { margin-top: 14px; font-size: 15px; opacity: .95 }
 
     #st{font-weight:700;color:var(--accent1)}
+
+    /* Visualizer canvas */
+    #visualizer {
+        width: 100%;
+        height: 60px;
+        margin-top: 14px;
+        border-radius: 8px;
+        background: rgba(0,0,0,0.2);
+    }
+
+    /* Stats area */
+    .stats-area {
+        margin-top: 10px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.5);
+        cursor: help;
+    }
+
+    .stats-details {
+        display: none;
+        margin-top: 8px;
+        padding: 10px;
+        background: rgba(0,0,0,0.3);
+        border-radius: 8px;
+        text-align: left;
+        font-size: 11px;
+    }
+
+    .stats-details div {
+        margin: 4px 0;
+    }
+
+    .quality-good { color: var(--accent1); }
+    .quality-degraded { color: #ffc107; }
+    .quality-poor { color: #ff5252; }
 
     /* ripple (kept) */
     #playBtn:after {
@@ -109,20 +200,6 @@
     }
     #playBtn:active:after { transform: scale(3.6); opacity: 1 }
 
-    /* tiny waveform visual */
-    .wave{
-        margin-top:16px;
-        height:36px;
-        display:flex;gap:6px;align-items:end;justify-content:center;
-        pointer-events:none
-    }
-    .bar{width:6px;border-radius:3px;background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.12));opacity:.9;transform-origin:bottom;animation:bar 1s infinite ease-in-out}
-    .bar.b2{animation-delay:.08s;height:10px}
-    .bar.b3{animation-delay:.16s;height:18px}
-    .bar.b4{animation-delay:.24s;height:12px}
-    .bar.b5{animation-delay:.32s;height:22px}
-    @keyframes bar{0%{transform:scaleY(.35)}50%{transform:scaleY(1.0)}100%{transform:scaleY(.45)}}
-
     @keyframes fadeIn {from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
     /* footer */
@@ -137,36 +214,52 @@
 </head>
 
 <body>
-    <div class="blob b1" aria-hidden></div>
-    <div class="blob b2" aria-hidden></div>
+    <div class="blob b1" aria-hidden="true"></div>
+    <div class="blob b2" aria-hidden="true"></div>
 
     <div class="card" role="region" aria-label="LAN Audio Stream Card">
         <h2>Sexy Audio Stream</h2>
         <div class="sub">Stream audio from your LAN server — click Play to connect</div>
         
-        <button id="playBtn" aria-pressed="false" title="Play Stream">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <button id="playBtn" class="btn" aria-pressed="false" title="Play Stream">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path d="M5 3v18l15-9L5 3z" fill="#021009" />
             </svg>
             <span>Play Stream</span>
         </button>
 
-        <div class="wave" aria-hidden>
-            <div class="bar b1" style="height:14px"></div>
-            <div class="bar b2" style="height:20px"></div>
-            <div class="bar b3" style="height:26px"></div>
-            <div class="bar b4" style="height:16px"></div>
-            <div class="bar b5" style="height:22px"></div>
+        <div class="controls">
+            <button id="pauseBtn" class="btn" title="Pause">Pause</button>
+            <button id="stopBtn" class="btn" title="Stop">Stop</button>
+            <button id="muteBtn" class="btn" title="Mute">Mute</button>
         </div>
 
+        <div class="volume-control">
+            <label for="volumeSlider">Volume</label>
+            <input type="range" id="volumeSlider" min="0" max="100" value="100" aria-label="Volume">
+        </div>
+
+        <canvas id="visualizer" width="460" height="60" aria-label="Audio visualization"></canvas>
+
         <p>Status: <span id="st">Idle</span></p>
+
+        <div id="statsArea" class="stats-area">
+            <span id="pps">0</span> packets/sec | Quality: <span id="quality" class="quality-good">good</span>
+            <div id="statsDetails" class="stats-details">
+                <div>Latency: <span id="latency">--</span></div>
+                <div>Total packets: <span id="totalPackets">0</span></div>
+                <div>Buffer underruns: <span id="underruns">0</span></div>
+            </div>
+        </div>
+
+        <div id="errorContainer"></div>
     </div>
 
     <footer>
         <div class="footer-badge">
             <span>Powered by</span>
             <a href="https://github.com/mayurkoli8" target="_blank" rel="noopener noreferrer" title="Mayur Koli on GitHub">
-                <svg class="gh" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <svg class="gh" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.13 0 0 .67-.21 2.2.82a7.6 7.6 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.11.16 1.93.08 2.13.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/>
                 </svg>
                 <span style="min-width:90px;text-align:left;">Mayur Koli</span>
@@ -174,59 +267,7 @@
         </div>
     </footer>
 
-<script>
-let btn = document.getElementById("playBtn");
-let st  = document.getElementById("st");
-
-let ctx, ws;
-let queue = [];
-let playTime = 0;
-
-btn.onclick = () => {
-    // keep original behaviour intact
-    ctx = new AudioContext({ sampleRate: 44100 });
-    ws = new WebSocket("ws://" + location.hostname + ":8765");
-    ws.binaryType = "arraybuffer";
-
-    ws.onopen = () => st.innerText = "Streaming…";
-    ws.onerror = () => st.innerText = "WebSocket Error";
-    ws.onclose = () => st.innerText = "Disconnected";
-
-    ws.onmessage = (e) => {
-        queue.push(new Int16Array(e.data));
-    };
-
-    function pump() {
-        while (queue.length > 0) {
-            let pcm = queue.shift();
-            let frames = pcm.length / 2;
-            let buf = ctx.createBuffer(2, frames, 44100);
-
-            let L = buf.getChannelData(0);
-            let R = buf.getChannelData(1);
-
-            for (let i = 0, j = 0; j < frames; j++) {
-                L[j] = pcm[i++] / 32768;
-                R[j] = pcm[i++] / 32768;
-            }
-
-            let src = ctx.createBufferSource();
-            src.buffer = buf;
-            src.connect(ctx.destination);
-
-            if (playTime < ctx.currentTime) {
-                playTime = ctx.currentTime + 0.10;
-            }
-
-            src.start(playTime);
-            playTime += buf.duration;
-        }
-
-        requestAnimationFrame(pump);
-    }
-
-    pump();
-};
-</script>
+    <!-- ES6 Module entry point -->
+    <script type="module" src="/static/js/ui.js"></script>
 </body>
 </html>

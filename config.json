@@ -1,0 +1,10 @@
+{
+    "http_port": 5000,
+    "ws_port": 8765,
+    "sample_rate": 44100,
+    "channels": 2,
+    "block_size": 1024,
+    "log_level": "INFO",
+    "max_reconnect_attempts": 10,
+    "client_timeout_seconds": 30
+}
